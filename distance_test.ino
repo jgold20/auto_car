@@ -5,7 +5,7 @@
 Servo car_servo;
 
 // Control Ints
-int pos;
+int pos = 0;
 int servo_pin;
 // End steering servo
 
@@ -39,7 +39,7 @@ int SAFE_DISTANCE = 12;
 // End sonar sensor setup
 
 // Alerts buzzers set up
-const int alert_buzzer;
+const int alert_buzzer = 8;
 
 // Setup section
 void setup() {
@@ -51,17 +51,27 @@ void setup() {
 // Main program loop
 void loop() {
   // put your main code here, to run repeatedly:
-  
+  Serial.println("Ready to test");
+  sensor_read(front);
+  delay(250);
 }
 
+// Read from distance sensor
 float sensor_read(Ultrasonic sensor) {
   microsec = sensor.timing();
   cmdistance = sensor.CalcDistance(microsec,Ultrasonic::CM);//this result unit is centimeter
   indistance = sensor.CalcDistance(microsec,Ultrasonic::IN);//this result unit is inches
 
+  Serial.print("cm: ");
+  Serial.println(cmdistance);
+  Serial.print("inches: ");
+  Serial.println(indistance);
+  
+  
   // Testing for inches
   if(indistance < SAFE_DISTANCE) {
-    buzzer_alert();
+    Serial.println("Too close!"); // DEBUG
+    //buzzer_alert();
   }
   return(indistance);
 }
