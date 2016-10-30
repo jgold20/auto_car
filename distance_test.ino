@@ -1,114 +1,76 @@
-/*
- *UltrasonicDemo.pde - Ultrasonic sensor Ranging measure Demo
- *@Author:dragon
- *@DATA:2013-8-7
- *Company website:www.elecfreaks.com
- */
 #include <Ultrasonic.h>
 #include <Servo.h>
 
+// Servo to steer the car
+Servo car_servo;
 
-//-------------------------
-// Sonar Sensor Setup
-// Front sensor
-#define front_trig 22
-#define front_echo 23
+// Control Ints
+int pos;
+int servo_pin;
+// End steering servo
+
+// Sonar pins declaration
+// Front Sensor
+const int front_trig = 22;
+const int front_echo = 23;
 
 // Blind left
-#define bl_trig 24
-#define bl_echo 25
+ const int bl_trig = 24;
+ const int bl_echo = 25;
 
 // Blind right
-#define br_trig 26
-#define br_echo 27
+const int br_trig = 26;
+const int br_echo = 27;
 
 // Rear sensor
-#define back_trig 28
-#define back_echo 29
+const int back_trig = 28;
+const int back_echo = 29;
 
-// Init ultrasonic sensors
+// Init Sensor Objects
 Ultrasonic front(front_trig,front_echo);
 Ultrasonic blind_left(bl_trig,bl_echo);
 Ultrasonic blind_right(br_trig,br_echo);
 Ultrasonic back(back_trig,back_echo);
 
-// Dist values for finding ultra sonic range
+// Sonar Values (needed for distance calcs)
 float cmdistance,indistance;
 long microsec;
-//-------------------------
+int SAFE_DISTANCE = 12;
+// End sonar sensor setup
 
-// Buzzer setup
-#define speakerPin 8
+// Alerts buzzers set up
+const int alert_buzzer;
 
-// distance min for check
-// Distance in inches
-const int SAFE_DISTANCE = 4;
-
-
-
-// LEDS
-//const int green_led = 13;
-//onst int red_led = 12;
-
-// Values for distance readings on each sonar
-float s1, s2, s3, s4;
-
-// Init servo
-Servo myservo;
-
-
-// Setup loop
-void setup()
-{
-  s1, s2, s3, s4 = 0;
-  pinMode (speakerPin, OUTPUT);
-  //set Serial Baud rate
-	Serial.begin(9600);
-
+// Setup section
+void setup() {
+  // Set alert buzzer
+  pinMode (alert_buzzer, OUTPUT);
+  Serial.begin(9600);
 }
 
-void loop()
-{
-  s1 = sensor_read(front);
-  delay(50);
-  s2 = sensor_read(blind_left);
-  delay(50);
-  s3 = sensor_read(blind_right);
-  delay(50);
-  s4 = sensor_read(back);
-  delay(50);
-  Serial.print("Front: ");
-  Serial.println(s1);
-  delay(500);
-  Serial.print("Back: ");
-  Serial.println(s4);
-  delay(500);
-  Serial.print("Left Blind: ");
-  Serial.println(s1);
-  delay(500);
-  Serial.print("Right Blind: ");
-  Serial.println(s3);
-  delay(500);
-  Serial.println("----------------");
+// Main program loop
+void loop() {
+  // put your main code here, to run repeatedly:
+  
 }
-
 
 float sensor_read(Ultrasonic sensor) {
-  // Sensor one
   microsec = sensor.timing();
+  cmdistance = sensor.CalcDistance(microsec,Ultrasonic::CM);//this result unit is centimeter
   indistance = sensor.CalcDistance(microsec,Ultrasonic::IN);//this result unit is inches
+
+  // Testing for inches
   if(indistance < SAFE_DISTANCE) {
     buzzer_alert();
   }
   return(indistance);
 }
 
-
 // Signal buzzer
 void buzzer_alert(void) {
-  digitalWrite(speakerPin, HIGH);
-  delay(420);
-  digitalWrite(speakerPin, LOW);
+  digitalWrite(alert_buzzer, HIGH);
+  delay(200);
+  digitalWrite(alert_buzzer, LOW);
 }
 
 
